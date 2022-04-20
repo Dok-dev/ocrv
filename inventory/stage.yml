@@ -1,0 +1,18 @@
+---
+all:
+  children:
+    master:
+      hosts:
+        domain1.travel-pt.ru:
+          ansible_connection: ssh
+          ansible_user: ansible
+          ansible_ssh_private_key_file: ~/.ssh/id_rsa
+          virtual_domain: domain1.yourdomain.ru
+
+    slave:
+      hosts:
+        domain2.travel-pt.ru:
+          ansible_connection: ssh
+          ansible_user: ansible
+          ansible_ssh_private_key_file: ~/.ssh/id_rsa
+          virtual_domain: domain2.yourdomain.ru

@@ -1,0 +1,70 @@
+- name: Update packages on CentOS (RedHat) Family
+  yum:
+    update_cache=yes
+
+- name: Include version-specific vars.
+  include_vars: "{{ item }}"
+  with_first_found:
+    - files:
+        - "{{ ansible_distribution }}-{{ ansible_distribution_major_version }}.yml"
+      skip: true
+
+- name: Install extra packages on CentOS (RedHat) Family
+  yum:
+    name: "{{ item }}"
+    state: present
+    update_cache: yes
+  with_items: "{{ extra_packages }}"
+  when:
+    extra_packages !=[]
+
+# tasks for ansible-disable-selinux
+- name: Disable SELinux at next reboot
+  selinux:
+    state: disabled
+
+- name: Set SELinux in permissive mode until the machine is rebooted
+  command: setenforce 0
+  ignore_errors: true
+  changed_when: false
+
+#- name: Add port to firewalld
+#  firewalld:
+#    port: "{{ item }}"
+#    permanent: yes
+#    state: enabled
+#  when:
+#    (ansible_facts['distribution'] == "CentOS" and ansible_facts['distribution_major_version'] | int > 7)
+#  loop:
+#    - 80/tcp
+#    - 443/tcp
+#
+#- name: Reload service firewalld
+#  systemd:
+#    name: firewalld
+#    state: reloaded
+#  when:
+#    (ansible_facts['distribution'] == "CentOS" and ansible_facts['distribution_major_version'] | int > 7)
+
+- name: Install Nginx Web Server on CentOS (RedHat) Family
+  yum:
+    name: nginx
+    state: "{{ nginx_ver }}"
+  notify:
+    - enable nginx
+
+- name: Install Let's Encrypt
+  yum:
+    name: letsencrypt
+    state: present
+  when:
+    - (ansible_facts['distribution'] == "CentOS" and ansible_facts['distribution_major_version'] | int < 8)
+    - use_tls
+
+- name: Install Let's Encrypt on CentOS Stream
+  yum:
+    name: python3-certbot-apache
+    state: present
+  when:
+    - (ansible_facts['distribution'] == "CentOS" and ansible_facts['distribution_major_version'] | int > 7)
+    - use_tls

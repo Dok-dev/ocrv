@@ -1,0 +1,36 @@
+- name: Update packages on Ubuntu (Debian) Family
+  apt:
+    update_cache=yes cache_valid_time=86400
+
+- name: Include distribution and version-specific vars.
+  include_vars: "{{ item }}"
+  with_first_found:
+    - files:
+        - "{{ ansible_distribution }}-{{ ansible_distribution_major_version }}.yml"
+      skip: true
+
+- name: Install extra packages on Ubuntu (Debian) Family
+  apt:
+    name: "{{ extra_packages }}"
+    state: present
+  when:
+    extra_packages !=[]
+
+- name: Install Nginx Web Server on Ubuntu (Debian) Family
+  apt:
+    name: nginx
+    state: "{{ nginx_ver }}"
+  notify:
+    - enable nginx
+
+- name: Remove loading unused nginx modules in Debian
+  ansible.builtin.file:
+    path: /etc/nginx/modules-enabled
+    state: absent
+
+- name: Install Let's Encrypt
+  apt:
+    name: letsencrypt
+    state: present
+  when:
+    - use_tls

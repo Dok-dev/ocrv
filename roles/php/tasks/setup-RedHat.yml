@@ -1,0 +1,25 @@
+---
+#- name: Installing the EPEL repository and followed by the REMI repository for CentOS ver. < 8
+#  yum:
+#    name: "{{ item }}"
+#    state: latest
+#    update_cache: true
+#  become: true
+#  loop:
+#    - epel-release
+#    - http://rpms.remirepo.net/enterprise/remi-release-7.rpm
+#  when:
+#    (ansible_facts['distribution'] == "CentOS" and ansible_facts['distribution_major_version'] | int < 8)
+
+- name: Ensure dependency packages are installed.
+  package:
+    name: "{{ php_packages_extra }}"
+    state: "{{ php_packages_state }}"
+
+- name: Ensure PHP packages are installed.
+  package:
+    name: "{{ php_packages }}"
+    state: "{{ php_packages_state }}"
+    enablerepo: "{{ php_enablerepo | default(omit, true) }}"
+  notify: restart webserver
+

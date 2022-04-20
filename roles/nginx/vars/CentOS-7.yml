@@ -1,0 +1,5 @@
+extra_packages:
+  - epel-release
+  - libselinux-python
+  - libsemanage-python
+  #- python-apt

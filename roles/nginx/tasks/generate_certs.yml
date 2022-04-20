@@ -1,0 +1,23 @@
+- name: create letsencrypt directory
+  file: name=/var/www/letsencrypt state=directory
+
+- name: Install nginx site for letsencrypt requests to {{ nginx_domain_path }}
+  template:
+    src: templates/nginx-http.j2
+    dest: /etc/nginx/{{ nginx_domain_path }}/http.conf
+
+- name: Restart Nginx whith configuration for certificate generation
+  service:
+    name:  nginx
+    state: restarted
+  become: true
+
+- name: Create letsencrypt certificate
+  shell: letsencrypt certonly -n --webroot -w /var/www/letsencrypt -m info@{{ virtual_domain }} --agree-tos -d {{ virtual_domain }}
+  args:
+    creates: /etc/letsencrypt/live/{{ virtual_domain }}
+
+- name: Generate dhparams
+  shell: openssl dhparam -out /etc/nginx/dhparams.pem 2048
+  args:
+    creates: /etc/nginx/dhparams.pem

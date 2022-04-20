@@ -1,0 +1,4 @@
+nginx_user: nginx
+
+# Set Debian nginx virtual domains path
+nginx_domain_path: conf.d

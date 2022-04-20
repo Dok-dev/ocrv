@@ -1,0 +1,58 @@
+- name: Create www home directory
+  file:
+    path: /var/www/{{ virtual_domain }}/www
+    state: directory
+    owner: '{{ nginx_user }}'
+    group: '{{ nginx_user }}'
+    mode: '0755'
+
+- name: Create logs directory
+  file:
+    path: /var/www/{{ virtual_domain }}/log
+    state: directory
+    owner: '{{ nginx_user }}'
+    group: '{{ nginx_user }}'
+    mode: '0755'
+
+- name: Put content
+  template:
+    src=templates/index.j2
+    dest=/var/www/{{ virtual_domain }}/www/index.php
+    mode=644
+    owner={{ nginx_user }} group={{ nginx_user }}
+
+- name: Add virtual domain config
+  template:
+    src=templates/nginx_vhost.j2
+    dest=/etc/nginx/{{ nginx_domain_path }}/{{ virtual_domain }}.conf
+  when:
+    - use_tls: false
+    - use_php: false
+  notify:
+    - restart nginx
+
+- name: Add virtual domain SSL config
+  template:
+    src=templates/nginx_vhost_ssl.j2
+    dest=/etc/nginx/{{ nginx_domain_path }}/{{ virtual_domain }}.conf
+  when:
+    - use_tls
+    - use_php: false
+  notify:
+    - restart nginx
+
+- name: Add virtual domain PHP config
+  template:
+    src=templates/nginx_vhost_php.j2
+    dest=/etc/nginx/{{ nginx_domain_path }}/{{ virtual_domain }}.conf
+  when: (use_php and use_tls==false)
+  notify:
+    - restart nginx
+
+- name: Add virtual domain PHP+SSL config
+  template:
+    src=templates/nginx_vhost_php_ssl.j2
+    dest=/etc/nginx/{{ nginx_domain_path }}/{{ virtual_domain }}.conf
+  when: use_php and use_tls
+  notify:
+    - restart nginx

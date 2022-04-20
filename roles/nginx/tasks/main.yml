@@ -1,0 +1,42 @@
+---
+- name: Include distribution and version-specific vars.
+  include_vars: "{{ item }}"
+  with_first_found:
+    - files:
+        - "{{ ansible_os_family }}.yml"
+      skip: true
+
+# Setup for RedHat family
+- include_tasks: setup-RedHat.yml
+  when:
+    ansible_os_family == "RedHat"
+
+# Setup for Debian family
+- include_tasks: setup-Debian.yml
+  when:
+    ansible_os_family == "Debian"
+
+- name: Remove nginx enbled domains directory
+  ansible.builtin.file:
+    path: /etc/nginx/{{ nginx_domain_path }}
+    state: absent
+
+- name: Add nginx enbled domains directory
+  ansible.builtin.file:
+    path: /etc/nginx/{{ nginx_domain_path }}
+    state: directory
+
+- name: Replace nginx.conf
+  template:
+    src=nginx.j2
+    dest=/etc/nginx/nginx.conf
+    mode=644
+
+# Generate letsencrypt certifacates for domains
+- include_tasks: generate_certs.yml
+  when:
+    - use_tls
+
+# Install virtual domains
+- include_tasks: virtual_domains.yml
+

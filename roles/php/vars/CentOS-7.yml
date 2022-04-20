@@ -1,0 +1,4 @@
+---
+php_packages_extra:
+  - epel-release
+  - http://rpms.remirepo.net/enterprise/remi-release-7.rpm

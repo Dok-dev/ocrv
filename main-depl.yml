@@ -1,0 +1,37 @@
+---
+- hosts: master
+  become:
+    true
+  become_method:
+    sudo
+  become_user:
+    root
+  remote_user:
+    ansible
+  vars:
+    mysql_server_id: "1"
+    mysql_replication_role: master
+  roles:
+    - nginx
+    - php
+    - mysql
+    - redis
+
+- hosts: slave
+  become:
+    true
+  become_method:
+    sudo
+  become_user:
+    root
+  remote_user:
+    ansible
+  vars:
+    mysql_server_id: "2"
+    mysql_replication_role: slave
+    mysql_replication_master: domain1.travel-pt.ru
+  roles:
+    - nginx
+    - php
+    - mysql
+    - redis

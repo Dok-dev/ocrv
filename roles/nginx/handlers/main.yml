@@ -1,0 +1,37 @@
+---
+- name: restart nginx
+  # command: systemctl restart nginx
+  service:
+    name:  nginx
+    state: restarted
+  become: true
+
+#- name: start nginx
+#  service:
+#    name: nginx
+#    state: started
+#  become: true
+
+- name: enable nginx
+  service:
+    name: nginx
+    enabled: yes
+  become: true
+
+#- name: restart site
+#  supervisorctl: name={{ virtual_domain }} state=restarted
+#
+#- name: restart server
+#  command: 'shutdown -r now "Reboot triggered by Ansible"'
+#  async: 1
+#  poll: 0
+#  ignore_errors: true
+#  become: true
+#
+#- name: wait for server to restart
+#  local_action:
+#    module: wait_for
+#      host={{ inventory_hostname }}
+#      port=22
+#      delay=10
+#    become: false

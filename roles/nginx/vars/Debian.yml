@@ -1,0 +1,4 @@
+nginx_user: www-data
+
+# Set RedHat nginx virtual domains path
+nginx_domain_path: sites-enabled

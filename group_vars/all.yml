@@ -1,0 +1,35 @@
+# Nginx settings
+use_tls: false
+use_php: true
+
+# PHP settings
+php_enable_php_fpm: true
+php_enable_webserver: true
+
+###--- MySQL settings ---###
+# Внимание! Данный блок представлен в ознакомительных целях. Для хранения данных используется зашифрованный при помощи ansible-vault файл mysql_ecrypted.yaml, добавленый в .gitignore (см. ниже).
+mysql_root_password: "1234567F"
+mysql_databases:
+  - name: ocrv_db
+    encoding: utf8
+    collation: utf8_general_ci
+mysql_users:
+  - name: admin
+    host: "%"
+    password: "872^1234567Z"
+    priv: "olf_db.*:ALL"
+mysql_replication_user:
+  - name: admin
+    host: "%"
+    password: "872^1234567Z"
+    priv: "olf_db.*:ALL"
+
+include_vars:
+  - file: mysql_ecrypted.yaml
+###--------------------------###
+
+# Packages version settings
+nginx_ver: latest
+php_packages_state: present
+mysql_ver: present
+redis_ver: latest
