@@ -1,10 +1,17 @@
 - name: create letsencrypt directory
-  file: name=/var/www/letsencrypt state=directory
+  file:
+    name: /var/www/letsencrypt state=directory
+    mode: '750'
+    owner: root
+    group: '{{ nginx_user }}'
 
 - name: Install nginx site for letsencrypt requests to {{ nginx_domain_path }}
   template:
     src: templates/nginx-http.j2
     dest: /etc/nginx/{{ nginx_domain_path }}/http.conf
+    mode: '640'
+    owner: '{{ nginx_user }}'
+    group: '{{ nginx_user }}'
 
 - name: Restart Nginx whith configuration for certificate generation
   service:

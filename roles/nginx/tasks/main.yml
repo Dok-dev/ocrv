@@ -25,12 +25,17 @@
   ansible.builtin.file:
     path: /etc/nginx/{{ nginx_domain_path }}
     state: directory
+    mode: '750'
+    owner: root
+    group: '{{ nginx_user }}'
 
 - name: Replace nginx.conf
   template:
-    src=nginx.j2
-    dest=/etc/nginx/nginx.conf
-    mode=644
+    src: nginx.j2
+    dest: /etc/nginx/nginx.conf
+    mode: '640'
+    owner: root
+    group: '{{ nginx_user }}'
 
 # Generate letsencrypt certifacates for domains
 - include_tasks: generate_certs.yml
