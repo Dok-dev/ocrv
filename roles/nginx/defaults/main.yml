@@ -10,6 +10,3 @@ client_max_body_size: 32M
 
 fastcgi_pass_path: 127.0.0.1:9000
 # fastcgi_pass_path: unix:/run/php-fpm/www.sock
-
-extra_packages:
-  - letsencrypt
